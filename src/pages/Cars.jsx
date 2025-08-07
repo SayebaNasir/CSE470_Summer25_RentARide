@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import Title from '../components/Title'
 import { assets, dummyCarData } from '../assets/assets'
@@ -6,19 +5,31 @@ import CarCard from '../components/CarCard'
 
 const Cars = () => {
   const [searchText, setSearchText] = useState('')
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [selectedRating, setSelectedRating] = useState(0)
+  const [showFilter, setShowFilter] = useState(false)
+  const [priceRange, setPriceRange] = useState('')
 
-  const filteredCars = dummyCarData.filter((car) => {
-    const text = searchText.toLowerCase()
-    const matchesText =
-      car.model.toLowerCase().includes(text) ||
-      car.brand.toLowerCase().includes(text) ||
-      (car.features && car.features.join(' ').toLowerCase().includes(text))
+  const filteredCars = dummyCarData.filter(car => {
+    const textMatch = car.model.toLowerCase().includes(searchText.toLowerCase()) ||
+                      car.brand.toLowerCase().includes(searchText.toLowerCase())
 
-    const matchesRating = selectedRating === 0 || car.rating === selectedRating
+    const carPrice = Number(car.pricePerDay)
+    let priceMatch = true
 
-    return matchesText && matchesRating
+    if (!isNaN(carPrice)) {
+      if (priceRange === 'under1500') {
+        priceMatch = carPrice < 1500
+      } else if (priceRange === '1500to2000') {
+        priceMatch = carPrice >= 1500 && carPrice < 2000
+      } else if (priceRange === '2000to2500') {
+        priceMatch = carPrice >= 2000 && carPrice < 2500
+      } else if (priceRange === '2500to3000') {
+        priceMatch = carPrice >= 2500 && carPrice < 3000
+      } else if (priceRange === '3000to3500') {
+        priceMatch = carPrice >= 3000 && carPrice < 3500
+      }
+    }
+
+    return textMatch && priceMatch
   })
 
   return (
@@ -29,60 +40,43 @@ const Cars = () => {
           subtitle="Browse to choose from our selected cars for your next adventure!" 
         />
 
+        {/* Search & Filter */}
         <div className='search-bar flex items-center bg-white px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow relative'>
-          <img src={assets.search_icon} alt="Search Icon" className='icon w-4 h-4.5 mr-2' />
+          <img src={assets.search_icon} alt="search" className='w-4 h-4.5 mr-2' />
           <input
             type="text"
             placeholder="Search by car model"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className='input w-full h-full outline-none text-gray-500'
+            className='w-full h-full outline-none text-gray-500'
           />
           <img 
             src={assets.filter_icon} 
-            alt="Filter Icon" 
-            className='icon w-4 h-4.5 ml-2 cursor-pointer' 
-            onClick={() => setIsFilterOpen(!isFilterOpen)} 
+            alt="filter" 
+            className='w-4 h-4.5 ml-2 cursor-pointer' 
+            onClick={() => setShowFilter(!showFilter)}
           />
 
-          {/* Star rating filter dropdown */}
-          {isFilterOpen && (
-            <div className='filter-dropdown absolute right-0 top-full mt-2 bg-white border rounded shadow p-2 z-10 w-32'>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <div
-                  key={star}
-                  onClick={() => {
-                    setSelectedRating(selectedRating === star ? 0 : star)
-                    setIsFilterOpen(false)
-                  }}
-                  className={`filter-option cursor-pointer px-3 py-1 hover:bg-gray-100 ${
-                    selectedRating === star ? 'font-bold text-blue-600' : ''
-                  }`}
-                >
-                  {star} Star{star > 1 ? 's' : ''}
-                </div>
-              ))}
-              <div
-                onClick={() => {
-                  setSelectedRating(0)
-                  setIsFilterOpen(false)
-                }}
-                className='clear-filter cursor-pointer px-3 py-1 mt-1 border-t hover:bg-gray-100 text-red-500 text-center'>
-                Clear Filter
-              </div>
+          {/* Price Filter Dropdown */}
+          {showFilter && (
+            <div className='absolute right-0 top-full mt-2 bg-white border rounded shadow p-2 z-10 w-56'>
+              <div onClick={() => { setPriceRange('under1500'); setShowFilter(false); }} className='cursor-pointer px-3 py-1 hover:bg-gray-100'>Less than 1500৳</div>
+              <div onClick={() => { setPriceRange('1500to2000'); setShowFilter(false); }} className='cursor-pointer px-3 py-1 hover:bg-gray-100'>1500৳ to 1999৳</div>
+              <div onClick={() => { setPriceRange('2000to2500'); setShowFilter(false); }} className='cursor-pointer px-3 py-1 hover:bg-gray-100'>2000৳ to 2499৳</div>
+              <div onClick={() => { setPriceRange('2500to3000'); setShowFilter(false); }} className='cursor-pointer px-3 py-1 hover:bg-gray-100'>2500৳ to 2999৳</div>
+              <div onClick={() => { setPriceRange('3000to3500'); setShowFilter(false); }} className='cursor-pointer px-3 py-1 hover:bg-gray-100'>3000৳ to 3499৳</div>
+              <div onClick={() => { setPriceRange(''); setShowFilter(false); }} className='text-red-500 px-3 py-1 mt-1 border-t text-center cursor-pointer hover:bg-gray-100'>Clear Filter</div>
             </div>
           )}
         </div>
       </div>
 
+      {/* Car List */}
       <div className='car-list px-6 md:px-16 lg:px-24 xl:px-32 mt-10'>
-        <p className='result-count'>Showing {filteredCars.length} Cars</p>
-
-        <div className='car-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
-          {filteredCars.map((car, index) => (
-            <div key={index}>
-              <CarCard car={car} />
-            </div>
+        <p>Showing {filteredCars.length} Cars</p>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
+          {filteredCars.map((car, i) => (
+            <CarCard key={i} car={car} />
           ))}
         </div>
       </div>
