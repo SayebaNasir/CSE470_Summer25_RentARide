@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+*{
+  font-family: "Outfit", sans-serif;
+}
+
+@theme{
+  --color-primary: #eb258f ;
+  --color-primary-dull: #d81f88 ;
+  --color-light: #f9f1f7 ;
+  --color-bordercolor: #d2c4ce ;
+}
