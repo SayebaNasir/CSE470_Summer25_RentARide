@@ -1,18 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 
 const Login = ({ setShowLogin }) => {
   const [state, setState] = useState("login")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const firstInputRef = useRef(null) // for autofocus
-
-  useEffect(() => {
-    // Auto-focus first available input when modal opens
-    if (firstInputRef.current) {
-      firstInputRef.current.focus()
-    }
-  }, [state])
 
   const onSubmitHandler = (e) => {
     e.preventDefault()
@@ -22,7 +14,8 @@ const Login = ({ setShowLogin }) => {
   return (
     <div
       onClick={(e) => {
-        if (e.target === e.currentTarget) setShowLogin(false) // close only on background click
+        // Only close modal if background clicked
+        if (e.target === e.currentTarget) setShowLogin(false)
       }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 text-sm text-gray-600"
     >
@@ -31,13 +24,13 @@ const Login = ({ setShowLogin }) => {
         onClick={(e) => e.stopPropagation()} // prevent background click
         className="flex flex-col gap-4 w-80 sm:w-[352px] p-8 rounded-lg shadow-xl border border-gray-200 bg-white"
       >
+        {/* Gradient Title */}
         <p className="text-2xl font-medium text-center bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
           {state === "login" ? "Vroom Into Your Next Adventure!" : "Sign Up"}
         </p>
 
         {state === "register" && (
           <input
-            ref={state === "register" ? firstInputRef : null}
             onChange={(e) => setName(e.target.value)}
             value={name}
             placeholder="Name"
@@ -48,7 +41,6 @@ const Login = ({ setShowLogin }) => {
         )}
 
         <input
-          ref={state === "login" ? firstInputRef : null}
           onChange={(e) => setEmail(e.target.value)}
           value={email}
           placeholder="Email"
@@ -92,7 +84,7 @@ const Login = ({ setShowLogin }) => {
 
         <button
           type="submit"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()} // prevent bubbling to background
           className="bg-pink-500 hover:bg-pink-600 transition-all text-white w-full py-2 rounded-md"
         >
           {state === "register" ? "Create Account" : "Login"}
