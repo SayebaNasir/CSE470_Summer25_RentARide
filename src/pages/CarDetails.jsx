@@ -181,7 +181,7 @@ function CarDetails() {
         </div>
       </div>
 
-      {/* Booking Popup */}
+      {/* Checkout form */}
       {popupVisible && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           {/* Blur background behind popup */}
@@ -212,7 +212,7 @@ function CarDetails() {
 
             <input
               type="text"
-              placeholder="Contact Number (11 digits, start with 01)"
+              placeholder="Contact Number (11 digits, starts with 01)"
               maxLength={11}
               value={contact}
               onChange={e => {
